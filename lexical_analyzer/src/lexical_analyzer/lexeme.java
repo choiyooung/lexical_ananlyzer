@@ -1,10 +1,9 @@
 package lexical_analyzer;
 
 import static lexical_analyzer.lexical_analyzer.fileString;
-
-import java.io.File;
-
 import static lexical_analyzer.lexical_analyzer.fileIndex;
+import static lexical_analyzer.lexical_analyzer.line;
+import static lexical_analyzer.lexical_analyzer.lineIndex;
 
 public class lexeme {
 	public String token;
@@ -29,8 +28,8 @@ public class lexeme {
 		this.lexeme = "";
 		this.charClass = -1;
 	}
-
 	public String lex() {
+		int errDetectIndex = lineIndex;
 		getChar();
 		switch (this.charClass) {
 		case LETTER:
@@ -48,14 +47,33 @@ public class lexeme {
 				addChar();
 				getChar();
 			}
+
 			this.token = "INTEGER";
 			System.out.println(this.lexeme + ":" + this.token);
-			return "NULL";
+			return token;
 		case ARITHMETIC_OPERATION:
 			addChar();
+			int frontCharIndex = 0;
+			char frontChar;
+			if (fileIndex >= 2) {
+				frontCharIndex = fileIndex - 2;
+				while (fileString[frontCharIndex] == ' ') {
+					frontCharIndex--;
+					if(frontCharIndex < 0){
+						frontChar = 0;
+						frontCharIndex= 0;
+						break;
+					}
+				}
+				frontChar = fileString[frontCharIndex];
+			}else {
+				frontChar = 0;
+			}
 			if (this.nextChar == '-') {
-				if ((fileString[fileIndex - 1] == DIGIT && fileString[fileIndex + 1] == DIGIT)
-						|| (fileString[fileIndex - 1] == DIGIT && fileString[fileIndex + 1] == '-'))
+				if (((frontChar >= 48 && frontChar <= 57)
+						&& (fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57))
+						|| (frontChar >= 48 && frontChar <= 57
+								&& fileString[fileIndex ] == '-'))
 					return lookup(lexeme);
 				getChar();
 				if (this.charClass == DIGIT) {
@@ -64,14 +82,15 @@ public class lexeme {
 						getChar();
 					}
 					this.token = "INTEGER";
+					System.out.println(this.lexeme + ":" + this.token);
+					return token;
 				}
 			}
 			return lookup(lexeme);
 		case C_A_OPERATION:
 			addChar();
 			getChar();
-			while(this.charClass == C_A_OPERATION)
-			{
+			while (this.charClass == C_A_OPERATION) {
 				addChar();
 				getChar();
 			}
@@ -79,51 +98,52 @@ public class lexeme {
 		case SEMICOLON:
 			addChar();
 			return lookup(lexeme);
-		case BRAKET :
+		case BRAKET:
 			addChar();
 			return lookup(lexeme);
-		case COMMA :
+		case COMMA:
 			addChar();
 			return lookup(lexeme);
-		case WHITESPACE :
+		case WHITESPACE:
 			addChar();
 			getChar();
-			while(this.charClass == WHITESPACE)
-			{
+			while (this.charClass == WHITESPACE) {
 				addChar();
 				getChar();
 			}
-			return null;
-		case PAREN :
+			return token;
+		case PAREN:
 			addChar();
 			return lookup(lexeme);
-		case QUOTES :
+		case QUOTES:
+			errDetectIndex = lineIndex;
 			fileIndex++;
 			getChar();
-			while(fileString.length >= fileIndex)
-			{
+			while (fileString.length >= fileIndex) {
+
 				addChar();
 				getChar();
-				if(this.charClass == QUOTES)
-				{
+				if (this.charClass == QUOTES) {
 					fileIndex++;
 					token = "LITERAL";
 					System.out.println(this.lexeme + ":" + this.token);
-					return null;
+					return token;
 				}
 			}
-			System.out.println("err:문장이 완서되지 않았습니다." );
+			System.out.println("err:" + line + "줄" + errDetectIndex + "번째부터  문장이 완서되지 않았습니다.");
 			break;
 		case REMAINDER:
 			addChar();
-			System.out.println("err: lexical 에 맞지않는 문법입니다." );
+//			getChar();
+//			while (this.charClass != WHITESPACE) {
+//				addChar();
+//				getChar();
+//			}
+			System.out.println("err:" + line + "줄" + errDetectIndex + "번째에  " + this.lexeme + " 은 맞지않는 lexical입니다. ");
 			break;
 		}
-		
-		
-		return null;
+		return "err";
 	}
-
 	public String lookup(String lexeme) {
 		switch (lexeme) {
 		case "int":
@@ -199,9 +219,8 @@ public class lexeme {
 			token = "IDENTIFIER";
 		}
 		System.out.println(this.lexeme + ":" + this.token);
-		return "";
+		return token;
 	}
-
 	public void getChar() {
 		// 다으메 들어온 단어가 Digit이면
 		if (fileIndex >= fileString.length) {
@@ -209,7 +228,7 @@ public class lexeme {
 			return;
 		}
 		this.nextChar = fileString[fileIndex];
-		if (this.nextChar >= 48 && this.nextChar <= 57) {
+		if (this.nextChar >= 48 && this.nextChar <= 57) { // digit이면
 			this.charClass = 0;
 		} else if ((this.nextChar >= 65 && this.nextChar <= 90) || (this.nextChar >= 97 && this.nextChar <= 122)) { // 다음에
 																													// 들어온
@@ -237,9 +256,20 @@ public class lexeme {
 			this.charClass = -1;
 		}
 	}
-
 	public void addChar() {
 		this.lexeme += this.nextChar;
+		if (this.nextChar == 13) {
+			line++;
+			lineIndex = 0;
+		} else if (this.nextChar == 9)
+			lineIndex += 4;
+		else if (this.nextChar == 32)
+			lineIndex++;
+		else if (this.nextChar == 10)
+			lineIndex = 0;
+		else {
+			lineIndex++;
+		}
 		fileIndex++;
 	}
 }

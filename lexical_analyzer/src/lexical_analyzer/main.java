@@ -12,6 +12,7 @@ public class main {
 		// TODO Auto-generated method stub
 		lexical_analyzer lexi = new lexical_analyzer(readFile("test.c"));
 		lexi.analyze();
+		lexi.printSymBolTable();
 		
 	}
 	 public static char[] readFile(String filename) {
