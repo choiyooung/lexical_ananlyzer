@@ -1,38 +1,42 @@
 package lexical_analyzer;
 
 import static lexical_analyzer.lexical_analyzer.fileString;
+
+import java.io.File;
+
 import static lexical_analyzer.lexical_analyzer.fileIndex;
 
 public class lexeme {
 	public String token;
 	public String lexeme;
-	public int charClass; // ´ÙÀ½ µé¾î¿À´Â ±ÛÀÚ°¡ ¼ıÀÚ¸é 0, ±ÛÀÚ¸é 1, +,-,*,/ÀÌ¸é 2, =,<,>,!ÀÌ¸é 3, ;ÀÌ¸é 4, { or } ÀÌ¸é 5, comma ÀÌ¸é  6 , whiteSpaceÀÌ¸é 7, ( or ) ÀÌ¸é 8, " ÀÌ¸é 9 ,³ª¸ÓÁö´Â -1
+	public int charClass; // ë‹¤ìŒ ë“¤ì–´ì˜¤ëŠ” ê¸€ìê°€ ìˆ«ìë©´ 0, ê¸€ìë©´ 1, +,-,*,/ì´ë©´ 2, =,<,>,!ì´ë©´ 3, ;ì´ë©´ 4, { or } ì´ë©´ 5, comma
+							// ì´ë©´ 6 , whiteSpaceì´ë©´ 7, ( or ) ì´ë©´ 8, " ì´ë©´ 9 ,ë‚˜ë¨¸ì§€ëŠ” -1
 	public char nextChar;
 	public final int DIGIT = 0;
 	public final int LETTER = 1;
 	public final int ARITHMETIC_OPERATION = 2;
-	public final int C_A_OPERATION = 3; // compare_assignment_operationÀÇ ÁÙÀÓ¸»
+	public final int C_A_OPERATION = 3; // compare_assignment_operationì˜ ì¤„ì„ë§
 	public final int SEMICOLON = 4;
 	public final int BRAKET = 5;
 	public final int COMMA = 6;
 	public final int WHITESPACE = 7;
 	public final int PAREN = 8;
+	public final int QUOTES = 9;
 	public final int REMAINDER = -1;
-	
+
 	public lexeme() {
 		this.token = "";
 		this.lexeme = "";
 		this.charClass = -1;
 	}
-	public String lex()
-	{
+
+	public String lex() {
 		getChar();
-		switch(this.charClass) {
+		switch (this.charClass) {
 		case LETTER:
 			addChar();
 			getChar();
-			while(this.charClass == LETTER || this.charClass == DIGIT)
-			{
+			while (this.charClass == LETTER || this.charClass == DIGIT) {
 				addChar();
 				getChar();
 			}
@@ -40,21 +44,83 @@ public class lexeme {
 		case DIGIT:
 			addChar();
 			getChar();
-			while(this.charClass == DIGIT) {
+			while (this.charClass == DIGIT) {
 				addChar();
 				getChar();
 			}
 			this.token = "INTEGER";
-			System.out.println(this.lexeme + ":" +this.token);
+			System.out.println(this.lexeme + ":" + this.token);
 			return "NULL";
 		case ARITHMETIC_OPERATION:
 			addChar();
+			if (this.nextChar == '-') {
+				if ((fileString[fileIndex - 1] == DIGIT && fileString[fileIndex + 1] == DIGIT)
+						|| (fileString[fileIndex - 1] == DIGIT && fileString[fileIndex + 1] == '-'))
+					return lookup(lexeme);
+				getChar();
+				if (this.charClass == DIGIT) {
+					while (this.charClass == DIGIT) {
+						addChar();
+						getChar();
+					}
+					this.token = "INTEGER";
+				}
+			}
 			return lookup(lexeme);
-			
+		case C_A_OPERATION:
+			addChar();
+			getChar();
+			while(this.charClass == C_A_OPERATION)
+			{
+				addChar();
+				getChar();
+			}
+			return lookup(lexeme);
+		case SEMICOLON:
+			addChar();
+			return lookup(lexeme);
+		case BRAKET :
+			addChar();
+			return lookup(lexeme);
+		case COMMA :
+			addChar();
+			return lookup(lexeme);
+		case WHITESPACE :
+			addChar();
+			getChar();
+			while(this.charClass == WHITESPACE)
+			{
+				addChar();
+				getChar();
+			}
+			return null;
+		case PAREN :
+			addChar();
+			return lookup(lexeme);
+		case QUOTES :
+			addChar();
+			while(fileString.length >= fileIndex)
+			{
+				addChar();
+				getChar();
+				if(this.charClass == QUOTES )
+				{
+					token = "LITERAL";
+					return null;
+				}
+			}
+			System.out.println("err:ë¬¸ì¥ì´ ì™„ì„œë˜ ì•Šì•˜ìŠµë‹ˆë‹¤." );
+			break;
+		case REMAINDER:
+			addChar();
+			System.out.println("err: lexical ì— ë§ì§€ì•ŠëŠ” ë¬¸ë²•ì…ë‹ˆë‹¤." );
+			break;
 		}
+		
 		
 		return null;
 	}
+
 	public String lookup(String lexeme) {
 		switch (lexeme) {
 		case "int":
@@ -114,45 +180,63 @@ public class lexeme {
 		case "}":
 			token = "RBRACKET";
 			break;
+		case "(":
+			token = "LPAREN";
+			break;
+		case ")":
+			token = "RPAREN";
+			break;
 		case ",":
 			token = "COMMA";
 			break;
-
+		case ";":
+			token = "SEMICOLON";
+			break;
+		default:
+			token = "IDENTIFIER";
 		}
-		
-		System.out.println(this.lexeme + ":" +this.token);
+		System.out.println(this.lexeme + ":" + this.token);
 		return "";
 	}
+
 	public void getChar() {
-		// ´ÙÀ¸¸Ş µé¾î¿Â ´Ü¾î°¡ DigitÀÌ¸é
-		if(fileIndex >= fileString.length) {this.charClass = -1; return;}
+		// ë‹¤ìœ¼ë©” ë“¤ì–´ì˜¨ ë‹¨ì–´ê°€ Digitì´ë©´
+		if (fileIndex >= fileString.length) {
+			this.charClass = -1;
+			return;
+		}
 		this.nextChar = fileString[fileIndex];
-		fileIndex++;
 		if (this.nextChar >= 48 && this.nextChar <= 57) {
 			this.charClass = 0;
-		} else if ((this.nextChar >= 65 && this.nextChar <= 90) || (this.nextChar >= 97 && this.nextChar <= 122)) { // ´ÙÀ½¿¡ µé¾î¿Â ±ÛÀÚ°¡ letterÀÌ¸é
+		} else if ((this.nextChar >= 65 && this.nextChar <= 90) || (this.nextChar >= 97 && this.nextChar <= 122)) { // ë‹¤ìŒì—
+																													// ë“¤ì–´ì˜¨
+																													// ê¸€ìê°€
+																													// letterì´ë©´
 			this.charClass = 1;
-		} else if (this.nextChar == '+' || this.nextChar == '-' || this.nextChar == '*' || this.nextChar == '/') { // +,-,*,/ÀÌ¸é
+		} else if (this.nextChar == '+' || this.nextChar == '-' || this.nextChar == '*' || this.nextChar == '/') { // +,-,*,/ì´ë©´
 			this.charClass = 2;
-		} else if (this.nextChar == '=' || this.nextChar == '<' || this.nextChar == '>' || this.nextChar == '!') { // =,<,>,! ÀÌ¸é
+		} else if (this.nextChar == '=' || this.nextChar == '<' || this.nextChar == '>' || this.nextChar == '!') { // =,<,>,!
+																													// ì´ë©´
 			this.charClass = 3;
-		} else if (this.nextChar == ';') { // ; ÀÌ¸é
+		} else if (this.nextChar == ';') { // ; ì´ë©´
 			this.charClass = 4;
-		} else if (this.nextChar == '{' || this.nextChar == '}') { // {,} ÀÌ¸é
+		} else if (this.nextChar == '{' || this.nextChar == '}') { // {,} ì´ë©´
 			this.charClass = 5;
-		} else if (this.nextChar == ',') { // , ÀÌ¸é
+		} else if (this.nextChar == ',') { // , ì´ë©´
 			this.charClass = 6;
 		} else if (this.nextChar == 9 || this.nextChar == 10 || this.nextChar == 13 || this.nextChar == 32) {
 			this.charClass = 7;
-		} else if (this.nextChar == '(' || this.nextChar == ')') { // (,) ÀÌ¸é
+		} else if (this.nextChar == '(' || this.nextChar == ')') { // (,) ì´ë©´
 			this.charClass = 8;
-		} else if(this.nextChar == '"'){
+		} else if (this.nextChar == '"') { // " ì´ë©´
 			this.charClass = 9;
 		} else {
 			this.charClass = -1;
 		}
 	}
+
 	public void addChar() {
 		this.lexeme += this.nextChar;
+		fileIndex++;
 	}
 }
