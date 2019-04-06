@@ -98,18 +98,21 @@ public class lexeme {
 			addChar();
 			return lookup(lexeme);
 		case QUOTES :
-			addChar();
+			fileIndex++;
+			getChar();
 			while(fileString.length >= fileIndex)
 			{
 				addChar();
 				getChar();
-				if(this.charClass == QUOTES )
+				if(this.charClass == QUOTES)
 				{
+					fileIndex++;
 					token = "LITERAL";
+					System.out.println(this.lexeme + ":" + this.token);
 					return null;
 				}
 			}
-			System.out.println("err:문장이 완서되 않았습니다." );
+			System.out.println("err:문장이 완서되지 않았습니다." );
 			break;
 		case REMAINDER:
 			addChar();
