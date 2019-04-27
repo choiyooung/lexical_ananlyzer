@@ -6,15 +6,36 @@ import static lexical_analyzer.lexical_analyzer.line;
 import static lexical_analyzer.lexical_analyzer.lineIndex;
 
 public class lexeme {
-	public String token;
-	public String lexeme;
-	public int charClass; // ë‹¤ìŒ ë“¤ì–´ì˜¤ëŠ” ê¸€ìê°€ ìˆ«ìë©´ 0, ê¸€ìë©´ 1, +,-,*,/ì´ë©´ 2, =,<,>,!ì´ë©´ 3, ;ì´ë©´ 4, { or } ì´ë©´ 5, comma
-							// ì´ë©´ 6 , whiteSpaceì´ë©´ 7, ( or ) ì´ë©´ 8, " ì´ë©´ 9 ,ë‚˜ë¨¸ì§€ëŠ” -1
-	public char nextChar;
-	public final int DIGIT = 0;
-	public final int LETTER = 1;
+
+	// syntactic category determined by lexeme(etc. Intger, Indentifier, operater .....) 
+	public String token;  
+	
+	// The variable that add next input after the last part of lexeme;
+	public String lexeme; 
+	
+	public String tokenValue;
+	
+	//charClass variable is variable that determines the type of the next input  
+	public int charClass; // if next input is digit, value is  0
+						  // if next input is letter, value is 1,
+						  // if next input is +,-,*and /,value is 2,
+						  // if next input is  =,<,> and !, value is  3,
+					      // if next input is ; , value is 4
+	  					  // if next input is { or } , value is 5
+						  // if next input is ,(comma) , value is 6
+						  // if next input is whitespace, value is 7
+						  // if next input is ( or ), value is 8B in the pile
+						  // if next input is " , value is 9
+						  // if next input is remainder(error input), value is -1
+	
+	// Strore next input(one char)
+	public char nextChar; 
+	
+	//  macros used to charClass  and used to determine the token
+	public final int DIGIT = 0; 	
+	public final int LETTER = 1; 	
 	public final int ARITHMETIC_OPERATION = 2;
-	public final int C_A_OPERATION = 3; // compare_assignment_operationì˜ ì¤„ì„ë§
+	public final int C_A_OPERATION = 3; // compare operation and assignment operation
 	public final int SEMICOLON = 4;
 	public final int BRAKET = 5;
 	public final int COMMA = 6;
@@ -22,15 +43,26 @@ public class lexeme {
 	public final int PAREN = 8;
 	public final int QUOTES = 9;
 	public final int REMAINDER = -1;
-
+	
+	//lexeme Constructor
 	public lexeme() {
 		this.token = "";
 		this.lexeme = "";
+		this.tokenValue = "";
 		this.charClass = -1;
 	}
+	
+	// determine to token and token value(lexeme). if there is a lexeme that does not fit, return err;
 	public String lex() {
+		// store lexeme of line-position 
 		int errDetectIndex = lineIndex;
+		
+		// first input take it
 		getChar();
+		
+		// check lexeme according to first input
+		// if you want to understand code below, check the documentation
+		// so I will not explain the code
 		switch (this.charClass) {
 		case LETTER:
 			addChar();
@@ -39,6 +71,7 @@ public class lexeme {
 				addChar();
 				getChar();
 			}
+			this.tokenValue = lexeme;
 			return lookup(lexeme);
 		case DIGIT:
 			addChar();
@@ -47,9 +80,12 @@ public class lexeme {
 				addChar();
 				getChar();
 			}
-
+			if(lexeme.charAt(0) == '0') {
+				System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° integer°¡  Àß¸ø µÇ½À´Ï´Ù.");
+				break;
+			}
+			this.tokenValue = lexeme;
 			this.token = "INTEGER";
-			System.out.println(this.lexeme + ":" + this.token);
 			return token;
 		case ARITHMETIC_OPERATION:
 			addChar();
@@ -70,19 +106,21 @@ public class lexeme {
 				frontChar = 0;
 			}
 			if (this.nextChar == '-') {
-				if (((frontChar >= 48 && frontChar <= 57)
-						&& (fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57))
-						|| (frontChar >= 48 && frontChar <= 57
-								&& fileString[fileIndex ] == '-'))
+				if (((frontChar >= 48 && frontChar <= 57)&& (fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57))|| (frontChar >= 48 && frontChar <= 57&& fileString[fileIndex ] == '-')) {
 					return lookup(lexeme);
+				}
 				getChar();
-				if (this.charClass == DIGIT) {
+				if (this.charClass == DIGIT ) {
 					while (this.charClass == DIGIT) {
 						addChar();
 						getChar();
 					}
+					if(lexeme.charAt(1) == '0') {
+						System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° integer°¡  Àß¸ø µÇ½À´Ï´Ù.");
+						break;
+					}
+					this.tokenValue = lexeme;
 					this.token = "INTEGER";
-					System.out.println(this.lexeme + ":" + this.token);
 					return token;
 				}
 			}
@@ -90,11 +128,21 @@ public class lexeme {
 		case C_A_OPERATION:
 			addChar();
 			getChar();
-			while (this.charClass == C_A_OPERATION) {
+			while(this.charClass == C_A_OPERATION) {
 				addChar();
 				getChar();
 			}
-			return lookup(lexeme);
+			lookup(lexeme);
+			if(token.equals("COMPARISON_OPERATION"))
+			{
+				this.tokenValue = lexeme;
+				return token;
+			}else if(token.equals("ASSIGNMENT_OPERATION")){
+				return token;
+			}else {
+				System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° comparsion operationÀÌ Àß¸ø µÇ½À´Ï´Ù.");
+				break;
+			}
 		case SEMICOLON:
 			addChar();
 			return lookup(lexeme);
@@ -111,6 +159,7 @@ public class lexeme {
 				addChar();
 				getChar();
 			}
+			token = "WHITESPACE";
 			return token;
 		case PAREN:
 			addChar();
@@ -120,38 +169,28 @@ public class lexeme {
 			fileIndex++;
 			getChar();
 			while (fileString.length >= fileIndex) {
-
 				addChar();
 				getChar();
 				if (this.charClass == QUOTES) {
 					fileIndex++;
+					this.tokenValue = lexeme;
 					token = "LITERAL";
-					System.out.println(this.lexeme + ":" + this.token);
 					return token;
 				}
 			}
-			System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ë¶€í„°  ë¬¸ì¥ì´ ì™„ì„œë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+			System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ°ºÎÅÍ  ¹®ÀåÀÌ ¿Ï¼­µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
 			break;
 		case REMAINDER:
 			addChar();
-//			getChar();
-//			while (this.charClass != WHITESPACE) {
-//				addChar();
-//				getChar();
-//			}
-			System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ì—  " + this.lexeme + " ì€ ë§ì§€ì•ŠëŠ” lexicalì…ë‹ˆë‹¤. ");
+			System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ°¿¡  " + this.lexeme + " Àº ¸ÂÁö¾Ê´Â lexicalÀÔ´Ï´Ù. ");
 			break;
 		}
 		return "err";
 	}
+	// function that determines token according to lexeme
 	public String lookup(String lexeme) {
+		// check that lexeme is keword
 		switch (lexeme) {
-		case "int":
-			token = "INT";
-			break;
-		case "char":
-			token = "CHAR";
-			break;
 		case "if":
 			token = "IF";
 			break;
@@ -164,6 +203,36 @@ public class lexeme {
 		case "else":
 			token = "ELSE";
 			break;
+		}
+		
+		// check that lexeme is arithmetic operation
+		switch (lexeme) {
+		case "+":
+			token = "ADD_OPERATION";
+			break;
+		case "-":
+			token = "SUB_OPERATION";
+			break;
+		case "*":
+			token = "MULTI_OPERATION";
+			break;
+		case "/":
+			token = "DIV_OPERATION";
+			break;
+		}
+		
+		// check that lexeme is variabl type 
+		switch (lexeme) {
+		case "int":
+			token = "VARTYPE";
+			break;
+		case "char":
+			token = "VARTYPE";
+			break;
+		}
+		
+		// check that lexeme is comparison operation, assignment operation
+		switch (lexeme) {
 		case "<":
 			token = "COMPARISON_OPERATION";
 			break;
@@ -185,18 +254,10 @@ public class lexeme {
 		case "=":
 			token = "ASSIGNMENT_OPERATION";
 			break;
-		case "+":
-			token = "ADD_OPERATION";
-			break;
-		case "-":
-			token = "SUB_OPERATION";
-			break;
-		case "*":
-			token = "MULTI_OPERATION";
-			break;
-		case "/":
-			token = "DIV_OPERATION";
-			break;
+		}
+		
+		// check that lexeme is braket, paren, comma
+		switch (lexeme) {
 		case "{":
 			token = "LBRACKET";
 			break;
@@ -215,49 +276,60 @@ public class lexeme {
 		case ";":
 			token = "SEMICOLON";
 			break;
-		default:
+		}
+		// defualt is indentifier
+		if(token == "")
+		{
 			token = "IDENTIFIER";
 		}
-		System.out.println(this.lexeme + ":" + this.token);
+		
+		// return token
 		return token;
 	}
+	
+	// the function to determine what kind of next input is
 	public void getChar() {
-		// ë‹¤ìœ¼ë©” ë“¤ì–´ì˜¨ ë‹¨ì–´ê°€ Digitì´ë©´
+		
+		// if file is end,  doesn't perform function getChar
 		if (fileIndex >= fileString.length) {
-			this.charClass = -1;
+			this.charClass = -2; // unmeaningful value Store.
 			return;
 		}
+		// store one character in fileStirng in nextChar 
 		this.nextChar = fileString[fileIndex];
-		if (this.nextChar >= 48 && this.nextChar <= 57) { // digitì´ë©´
-			this.charClass = 0;
-		} else if ((this.nextChar >= 65 && this.nextChar <= 90) || (this.nextChar >= 97 && this.nextChar <= 122)) { // ë‹¤ìŒì—
-																													// ë“¤ì–´ì˜¨
-																													// ê¸€ìê°€
-																													// letterì´ë©´
-			this.charClass = 1;
-		} else if (this.nextChar == '+' || this.nextChar == '-' || this.nextChar == '*' || this.nextChar == '/') { // +,-,*,/ì´ë©´
-			this.charClass = 2;
-		} else if (this.nextChar == '=' || this.nextChar == '<' || this.nextChar == '>' || this.nextChar == '!') { // =,<,>,!
-																													// ì´ë©´
-			this.charClass = 3;
-		} else if (this.nextChar == ';') { // ; ì´ë©´
-			this.charClass = 4;
-		} else if (this.nextChar == '{' || this.nextChar == '}') { // {,} ì´ë©´
-			this.charClass = 5;
-		} else if (this.nextChar == ',') { // , ì´ë©´
-			this.charClass = 6;
+		
+		// determine to type of nextChar
+		if (this.nextChar >= 48 && this.nextChar <= 57) {
+			this.charClass = DIGIT;
+		} else if ((this.nextChar >= 65 && this.nextChar <= 90) || (this.nextChar >= 97 && this.nextChar <= 122)) {
+			this.charClass = LETTER;
+		} else if (this.nextChar == '+' || this.nextChar == '-' || this.nextChar == '*' || this.nextChar == '/') { 
+			this.charClass = ARITHMETIC_OPERATION;
+		} else if (this.nextChar == '=' || this.nextChar == '<' || this.nextChar == '>' || this.nextChar == '!') {
+			this.charClass = C_A_OPERATION;
+		} else if (this.nextChar == ';') { 
+			this.charClass = SEMICOLON;
+		} else if (this.nextChar == '{' || this.nextChar == '}') { 
+			this.charClass = BRAKET;
+		} else if (this.nextChar == ',') {
+			this.charClass = COMMA;
 		} else if (this.nextChar == 9 || this.nextChar == 10 || this.nextChar == 13 || this.nextChar == 32) {
-			this.charClass = 7;
-		} else if (this.nextChar == '(' || this.nextChar == ')') { // (,) ì´ë©´
-			this.charClass = 8;
-		} else if (this.nextChar == '"') { // " ì´ë©´
-			this.charClass = 9;
+			this.charClass = WHITESPACE;
+		} else if (this.nextChar == '(' || this.nextChar == ')') {
+			this.charClass = PAREN;
+		} else if (this.nextChar == '"') {
+			this.charClass = QUOTES;
 		} else {
-			this.charClass = -1;
+			this.charClass = REMAINDER;
 		}
 	}
+	
+	// the function to add next input at the last part of lexeme
 	public void addChar() {
+		//add next input at the last part of lexeme
 		this.lexeme += this.nextChar;
+		
+		//  whitespace type is different, so file position index need to add a differnet value(tap is 4,space is 1) 
 		if (this.nextChar == 13) {
 			line++;
 			lineIndex = 0;
@@ -268,8 +340,10 @@ public class lexeme {
 		else if (this.nextChar == 10)
 			lineIndex = 0;
 		else {
+			//if whitespace is  
 			lineIndex++;
 		}
+		// increase the index of fileString for next input.
 		fileIndex++;
 	}
 }
