@@ -4,6 +4,7 @@ import static lexical_analyzer.lexical_analyzer.fileString;
 import static lexical_analyzer.lexical_analyzer.fileIndex;
 import static lexical_analyzer.lexical_analyzer.line;
 import static lexical_analyzer.lexical_analyzer.lineIndex;
+import static lexical_analyzer.lexical_analyzer.symbolTable;
 
 public class lexeme {
 
@@ -80,8 +81,8 @@ public class lexeme {
 				addChar();
 				getChar();
 			}
-			if(lexeme.charAt(0) == '0') {
-				System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° integer°¡  Àß¸ø µÇ½À´Ï´Ù.");
+			if(lexeme.charAt(0) == '0' && lexeme.length()>1) {
+				System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ integerê°€  ìž˜ëª» ë˜ìŠµë‹ˆë‹¤.");
 				break;
 			}
 			this.tokenValue = lexeme;
@@ -89,40 +90,48 @@ public class lexeme {
 			return token;
 		case ARITHMETIC_OPERATION:
 			addChar();
-			int frontCharIndex = 0;
-			char frontChar;
-			if (fileIndex >= 2) {
-				frontCharIndex = fileIndex - 2;
-				while (fileString[frontCharIndex] == ' ') {
-					frontCharIndex--;
-					if(frontCharIndex < 0){
-						frontChar = 0;
-						frontCharIndex= 0;
-						break;
+			if(lexeme.equals("-")) {
+				if(symbolTable.size() >1) {
+					int symbolIndex = symbolTable.size()-1;
+					if(symbolTable.get(symbolIndex)[0].equals("INTEGER")||symbolTable.get(symbolIndex)[0].equals("IDENTIFIER")) {
+						return lookup(lexeme);
+					}else {
+						if(fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57) {
+							getChar();
+							while(this.charClass == DIGIT) {
+								addChar();
+								getChar();
+							}
+							//ë§Œì•½ -04ì´ëŸ°ê±°ë¼ë©´ ì˜¤ë¥˜ìž„
+							if(lexeme.charAt(1) == '0') {
+								System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ integerê°€  ìž˜ëª» ë˜ìŠµë‹ˆë‹¤.");
+								break;
+							}
+							this.tokenValue = lexeme;
+							this.token = "INTEGER";
+							return token;
+						}
 					}
-				}
-				frontChar = fileString[frontCharIndex];
-			}else {
-				frontChar = 0;
-			}
-			if (this.nextChar == '-') {
-				if (((frontChar >= 48 && frontChar <= 57)&& (fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57))|| (frontChar >= 48 && frontChar <= 57&& fileString[fileIndex ] == '-')) {
-					return lookup(lexeme);
-				}
-				getChar();
-				if (this.charClass == DIGIT ) {
-					while (this.charClass == DIGIT) {
-						addChar();
+				}else {
+					//ë°”ë¡œ ë‹¤ìŒ ì¸í’‹ì´ ìˆ«ìžì•¼, ê·¸ëŸ¬ë©´ ë¶€í˜¸ì§€. 
+					if(fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57) {
 						getChar();
+						while(this.charClass == DIGIT) {
+							addChar();
+							getChar();
+						}
+						//ë§Œì•½ -04ì´ëŸ°ê±°ë¼ë©´ ì˜¤ë¥˜ìž„
+						if(lexeme.charAt(1) == '0') {
+							System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ integerê°€  ìž˜ëª» ë˜ìŠµë‹ˆë‹¤.");
+							break;
+						}
+						this.tokenValue = lexeme;
+						this.token = "INTEGER";
+						return token;
 					}
-					if(lexeme.charAt(1) == '0') {
-						System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° integer°¡  Àß¸ø µÇ½À´Ï´Ù.");
-						break;
-					}
-					this.tokenValue = lexeme;
-					this.token = "INTEGER";
-					return token;
 				}
+			}else{
+				return lookup(lexeme);
 			}
 			return lookup(lexeme);
 		case C_A_OPERATION:
@@ -140,7 +149,7 @@ public class lexeme {
 			}else if(token.equals("ASSIGNMENT_OPERATION")){
 				return token;
 			}else {
-				System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ° comparsion operationÀÌ Àß¸ø µÇ½À´Ï´Ù.");
+				System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ comparsion operationì´ ìž˜ëª» ë˜ìŠµë‹ˆë‹¤.");
 				break;
 			}
 		case SEMICOLON:
@@ -178,11 +187,11 @@ public class lexeme {
 					return token;
 				}
 			}
-			System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ°ºÎÅÍ  ¹®ÀåÀÌ ¿Ï¼­µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+			System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ë¶€í„°  ë¬¸ìž¥ì´ ì™„ì„œë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
 			break;
 		case REMAINDER:
 			addChar();
-			System.out.println("err:" + line + "ÁÙ" + errDetectIndex + "¹øÂ°¿¡  " + this.lexeme + " Àº ¸ÂÁö¾Ê´Â lexicalÀÔ´Ï´Ù. ");
+			System.out.println("err:" + line + "ì¤„" + errDetectIndex + "ë²ˆì§¸ì—  " + this.lexeme + " ì€ ë§žì§€ì•ŠëŠ” lexicalìž…ë‹ˆë‹¤. ");
 			break;
 		}
 		return "err";
