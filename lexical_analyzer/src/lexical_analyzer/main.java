@@ -13,8 +13,10 @@ public class main {
 
 	public static void main(String[] args) {
 		// the execution command is "java lexcial_analyzer <<filename>>"
-		String filename = args[0];
+		//String filename = args[0];
 
+		String filename = "./test.c";
+		
 		// file open and give file content to fileString of lexical_analyzer
 		lexical_analyzer lex_analyzer = new lexical_analyzer(readFile(filename));
 
@@ -22,7 +24,7 @@ public class main {
 		lex_analyzer.analyze();
 
 		// lexical analyzer is terminated, print symbolTable, and save symbolTable as file
-		lex_analyzer.printSymBolTable();
+		//lex_analyzer.printSymBolTable();
 
 		writeFile(filename, lexical_analyzer.symbolTable);
 	}
@@ -54,7 +56,7 @@ public class main {
 	   }
 
 	// <<filename>>.out.txt file open and symbolTable save in this file
-	public static void writeFile(String filename, ArrayList<String[]> symbolTable) {
+	public static void writeFile(String filename, ArrayList<SymbolTable> symbolTable) {
 		char[] fileString = null;
 
 		try {
@@ -63,9 +65,13 @@ public class main {
       BufferedWriter bw = new BufferedWriter(fw);
 
       for(int i = 0; i< symbolTable.size();i++) {
-      	bw.write(symbolTable.get(i)[0]);
+      	bw.write(symbolTable.get(i).getSymbol()[0]);
       	bw.write('\t');
-      	bw.write(symbolTable.get(i)[1]);
+      	bw.write(symbolTable.get(i).getSymbol()[1]);
+      	bw.write('\t');
+      	bw.write(Integer.toString(symbolTable.get(i).getLineNum()));
+      	bw.write('\t');
+      	bw.write(Integer.toString(symbolTable.get(i).getLineIndex()));
       	bw.newLine();
 
       }

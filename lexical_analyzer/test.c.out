@@ -1,122 +1,122 @@
-VARTYPE	int
-IDENTIFIER	add
-LPAREN	
-VARTYPE	int
-IDENTIFIER	a
-COMMA	
-VARTYPE	int
-IDENTIFIER	b
-RPAREN	
-LBRACKET	
-VARTYPE	int
-IDENTIFIER	c
-SEMICOLON	
-IDENTIFIER	c
-ASSIGNMENT_OPERATION	
-IDENTIFIER	a
-ADD_OPERATION	
-IDENTIFIER	b
-SEMICOLON	
-RETURN	return
-IDENTIFIER	c
-SEMICOLON	
-RBRACKET	
-VARTYPE	int
-IDENTIFIER	add10
-LPAREN	
-VARTYPE	int
-IDENTIFIER	a
-RPAREN	
-LBRACKET	
-VARTYPE	int
-IDENTIFIER	c
-ASSIGNMENT_OPERATION	
-INTEGER	10
-SEMICOLON	
-WHILE	while
-LPAREN	
-IDENTIFIER	c
-COMPARISON_OPERATION	!=
-INTEGER	0
-RPAREN	
-LBRACKET	
-IDENTIFIER	a
-ASSIGNMENT_OPERATION	
-IDENTIFIER	a
-ADD_OPERATION	
-INTEGER	1
-SEMICOLON	
-IDENTIFIER	c
-ASSIGNMENT_OPERATION	
-IDENTIFIER	c
-SUB_OPERATION	
-INTEGER	1
-SEMICOLON	
-RBRACKET	
-RETURN	return
-IDENTIFIER	a
-SEMICOLON	
-RBRACKET	
-VARTYPE	int
-IDENTIFIER	main
-LPAREN	
-VARTYPE	int
-IDENTIFIER	arg1
-COMMA	
-VARTYPE	char
-IDENTIFIER	arg2
-RPAREN	
-LBRACKET	
-VARTYPE	int
-IDENTIFIER	a
-COMMA	
-IDENTIFIER	b
-SEMICOLON	
-VARTYPE	int
-IDENTIFIER	c
-SEMICOLON	
-VARTYPE	char
-IDENTIFIER	str
-SEMICOLON	
-IDENTIFIER	a
-ASSIGNMENT_OPERATION	
-INTEGER	10
-SEMICOLON	
-IDENTIFIER	b
-ASSIGNMENT_OPERATION	
-INTEGER	20
-SEMICOLON	
-IDENTIFIER	c
-ASSIGNMENT_OPERATION	
-IDENTIFIER	add
-LPAREN	
-IDENTIFIER	a
-COMMA	
-IDENTIFIER	b
-RPAREN	
-SEMICOLON	
-IF	if
-LPAREN	
-IDENTIFIER	c
-COMPARISON_OPERATION	>
-INTEGER	10
-RPAREN	
-LBRACKET	
-IDENTIFIER	str
-ASSIGNMENT_OPERATION	
-LITERAL	A
-SEMICOLON	
-RBRACKET	
-ELSE	else
-IDENTIFIER	str
-ASSIGNMENT_OPERATION	
-LITERAL	B
-SEMICOLON	
-IDENTIFIER	a
-ASSIGNMENT_OPERATION	
-IDENTIFIER	add10
-LPAREN	
-IDENTIFIER	a
-RPAREN	
-SEMICOLON	
-RBRACKET	
+vtype	int	1	3
+id	add	1	7
+lparen		1	8
+vtype	int	1	11
+id	a	1	13
+comma		1	14
+vtype	int	1	18
+id	b	1	20
+rparen		1	21
+lbrace		1	23
+vtype	int	1	7
+id	c	1	9
+semi		1	10
+id	c	1	5
+assign		1	7
+id	a	1	9
+addsub		1	11
+id	b	1	13
+semi		1	14
+RETURN	return	1	10
+id	c	1	12
+semi		1	13
+rbrace		1	1
+vtype	int	1	3
+id	add10	1	9
+lparen		1	10
+vtype	int	1	13
+id	a	1	15
+rparen		1	16
+lbrace		1	17
+vtype	int	1	7
+id	c	1	9
+assign		1	11
+num	10	1	14
+semi		1	15
+while	while	1	9
+lparen		1	10
+id	c	1	12
+comp	!=	1	15
+num	0	1	17
+rparen		1	18
+lbrace		1	19
+id	a	1	9
+assign		1	11
+id	a	1	13
+addsub		1	15
+num	1	1	17
+semi		1	18
+id	c	1	9
+assign		1	11
+id	c	1	13
+addsub		1	15
+num	1	1	17
+semi		1	18
+rbrace		1	5
+RETURN	return	1	10
+id	a	1	12
+semi		1	13
+rbrace		1	1
+vtype	int	1	3
+id	main	1	8
+lparen		1	9
+vtype	int	1	12
+id	arg1	1	17
+comma		1	18
+vtype	char	1	23
+id	arg2	1	28
+rparen		1	29
+lbrace		1	30
+vtype	int	1	7
+id	a	1	9
+comma		1	10
+id	b	1	12
+semi		1	13
+vtype	int	1	7
+id	c	1	9
+semi		1	10
+vtype	char	1	8
+id	str	1	12
+semi		1	13
+id	a	1	5
+assign		1	6
+num	10	1	8
+semi		1	9
+id	b	1	5
+assign		1	6
+num	20	1	8
+semi		1	9
+id	c	1	5
+assign		1	7
+id	add	1	11
+lparen		1	12
+id	a	1	13
+comma		1	14
+id	b	1	15
+rparen		1	16
+semi		1	17
+if	if	1	6
+lparen		1	8
+id	c	1	9
+comp	>	1	11
+num	10	1	14
+rparen		1	16
+lbrace		1	18
+id	str	1	11
+assign		1	13
+literal	A	1	15
+semi		1	16
+rbrace		1	5
+else	else	1	8
+id	str	1	11
+assign		1	13
+literal	B	1	15
+semi		1	16
+id	a	1	5
+assign		1	7
+id	add10	1	13
+lparen		1	14
+id	a	1	15
+rparen		1	16
+semi		1	17
+rbrace		1	1

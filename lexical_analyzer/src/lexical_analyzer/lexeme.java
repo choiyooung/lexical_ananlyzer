@@ -86,14 +86,14 @@ public class lexeme {
 					break;
 				}
 				this.tokenValue = lexeme;
-				this.token = "INTEGER";
+				this.token = "num";
 				return token;
 			case ARITHMETIC_OPERATION:
 				addChar();
 				if(lexeme.equals("-")) {
 					if(symbolTable.size() >1) {
 						int symbolIndex = symbolTable.size()-1;
-						if(symbolTable.get(symbolIndex)[0].equals("INTEGER")||symbolTable.get(symbolIndex)[0].equals("IDENTIFIER")) {
+						if(symbolTable.get(symbolIndex).getSymbol()[0].equals("num")||symbolTable.get(symbolIndex).getSymbol()[0].equals("id")) {
 							return lookup(lexeme);
 						}else {
 							if(fileString[fileIndex] >= 48 && fileString[fileIndex] <= 57) {
@@ -108,7 +108,7 @@ public class lexeme {
 									break;
 								}
 								this.tokenValue = lexeme;
-								this.token = "INTEGER";
+								this.token = "num";
 								return token;
 							}
 						}
@@ -126,7 +126,7 @@ public class lexeme {
 								break;
 							}
 							this.tokenValue = lexeme;
-							this.token = "INTEGER";
+							this.token = "num";
 							return token;
 						}
 					}
@@ -142,11 +142,11 @@ public class lexeme {
 					getChar();
 				}
 				lookup(lexeme);
-				if(token.equals("COMPARISON_OPERATION"))
+				if(token.equals("comp"))
 				{
 					this.tokenValue = lexeme;
 					return token;
-				}else if(token.equals("ASSIGNMENT_OPERATION")){
+				}else if(token.equals("assign")){
 					return token;
 				}else {
 					System.out.println("err:" + line + " line," + errDetectIndex + "번째 comparsion operation이 잘못 되습니다.");
@@ -183,7 +183,7 @@ public class lexeme {
 					if (this.charClass == QUOTES) {
 						fileIndex++;
 						this.tokenValue = lexeme;
-						token = "LITERAL";
+						token = "literal";
 						return token;
 					}
 				}
@@ -201,90 +201,90 @@ public class lexeme {
 		// check that lexeme is keword
 		switch (lexeme) {
 			case "if":
-				token = "IF";
+				token = "if";
 				break;
 			case "while":
-				token = "WHILE";
+				token = "while";
 				break;
 			case "return":
 				token = "RETURN";
 				break;
 			case "else":
-				token = "ELSE";
+				token = "else";
 		}
 
 		// check that lexeme is arithmetic operation
 		switch (lexeme) {
 			case "+":
-				token = "ADD_OPERATION";
+				token = "addsub";
 				break;
 			case "-":
-				token = "SUB_OPERATION";
+				token = "addsub";
 				break;
 			case "*":
-				token = "MULTI_OPERATION";
+				token = "multdiv";
 				break;
 			case "/":
-				token = "DIV_OPERATION";
+				token = "multdiv";
 		}
 
 		// check that lexeme is variabl type
 		switch (lexeme) {
 			case "int":
-				token = "VARTYPE";
+				token = "vtype";
 				break;
 			case "char":
-				token = "VARTYPE";
+				token = "vtype";
 		}
 
 		// check that lexeme is comparison operation, assignment operation
 		switch (lexeme) {
 			case "<":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case ">":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case "==":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case "!=":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case "<=":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case ">=":
-				token = "COMPARISON_OPERATION";
+				token = "comp";
 				break;
 			case "=":
-				token = "ASSIGNMENT_OPERATION";
+				token = "assign";
 		}
 
 		// check that lexeme is bracket, paren, comma
 		switch (lexeme) {
 			case "{":
-				token = "LBRACKET";
+				token = "lbrace";
 				break;
 			case "}":
-				token = "RBRACKET";
+				token = "rbrace";
 				break;
 			case "(":
-				token = "LPAREN";
+				token = "lparen";
 				break;
 			case ")":
-				token = "RPAREN";
+				token = "rparen";
 				break;
 			case ",":
-				token = "COMMA";
+				token = "comma";
 				break;
 			case ";":
-				token = "SEMICOLON";
+				token = "semi";
 		}
 		// default is identifier
 		if(token == "")
 		{
-			token = "IDENTIFIER";
+			token = "id";
 		}
 
 		// return token

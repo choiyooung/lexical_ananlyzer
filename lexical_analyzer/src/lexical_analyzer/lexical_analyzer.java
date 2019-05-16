@@ -13,7 +13,7 @@ public class lexical_analyzer {
 	public static int lineIndex;
 
 	// store token and token value in symbolTable
-	public static ArrayList<String[]> symbolTable;
+	public static ArrayList<SymbolTable> symbolTable;
 
 	//Constructer
 	public lexical_analyzer(char[] fileString) {
@@ -21,7 +21,7 @@ public class lexical_analyzer {
 		this.fileIndex = 0;
 		this.line = 1;
 		this.lineIndex = 0;
-		symbolTable = new ArrayList<String[]>();
+		symbolTable = new ArrayList<SymbolTable>();
 
 	}
 
@@ -42,7 +42,9 @@ public class lexical_analyzer {
 			// if token is not "WHITSPACE", store token and token value in symbolTable
 			if(!tempToeken.equals("WHITESPACE") && !tempToeken.equals(err))
 			{
-				symbolTable.add(new String[] {tempToeken,tempValue});
+				String[] temp_str = new String[] {tempToeken,tempValue};
+				SymbolTable table = new SymbolTable(temp_str, line, lineIndex);
+				symbolTable.add(table);
 			}else if(tempToeken.equals(err)) {
 				// if token is "err", symboltable is clear
 				symbolTable.clear();
@@ -51,7 +53,7 @@ public class lexical_analyzer {
 		}
 	}
 	// return symboltable
-	public ArrayList<String[]> getSymBolTable()
+	public ArrayList<SymbolTable> getSymBolTable()
 	{
 		return symbolTable;
 	}
@@ -61,9 +63,9 @@ public class lexical_analyzer {
 		System.out.println("		token            value");
 		for(int i= 0; i < symbolTable.size(); i++)
 		{
-			System.out.format("%20s", symbolTable.get(i)[0]);
+			System.out.format("%20s", symbolTable.get(i).getSymbol()[0]);
 			System.out.print("  :  ");
-			System.out.format("%12s\n", symbolTable.get(i)[1]);
+			System.out.format("%12s\n", symbolTable.get(i).getSymbol()[1]);
 		}
 	}
 
