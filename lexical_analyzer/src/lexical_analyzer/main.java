@@ -13,9 +13,7 @@ public class main {
 
 	public static void main(String[] args) {
 		// the execution command is "java lexcial_analyzer <<filename>>"
-		//String filename = args[0];
-
-		String filename = "./test.c";
+		String filename = args[0];
 		
 		// file open and give file content to fileString of lexical_analyzer
 		lexical_analyzer lex_analyzer = new lexical_analyzer(readFile(filename));
@@ -24,7 +22,7 @@ public class main {
 		lex_analyzer.analyze();
 
 		// lexical analyzer is terminated, print symbolTable, and save symbolTable as file
-		//lex_analyzer.printSymBolTable();
+		lex_analyzer.printSymBolTable();
 
 		writeFile(filename, lexical_analyzer.symbolTable);
 	}
